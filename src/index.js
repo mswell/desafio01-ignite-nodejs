@@ -35,14 +35,16 @@ app.post('/users', (request, response) => {
     return response.status(400).json({ error: 'Username already exists.' });
   }
 
-  users.push({
+  const user = {
     name,
     username,
     id: uuidv4(),
     todos: [],
-  });
+  };
 
-  return response.status(201).send();
+  users.push(user);
+
+  return response.status(201).json(user);
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
@@ -52,7 +54,21 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { title, deadline } = request.body;
+
+  const { user } = request;
+
+  const todo = {
+    id: uuidv4(),
+    title,
+    done: false,
+    deadline: new Date(deadline),
+    created_at: new Date(),
+  };
+
+  user.todos.push(todo);
+
+  return response.status(201).json(todo);
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
